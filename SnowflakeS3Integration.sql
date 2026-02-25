@@ -1,0 +1,47 @@
+-- Create Storage Integration --
+
+USE SCHEMA DBZ.BRONZE;
+
+CREATE OR REPLACE STORAGE INTEGRATION AWS 
+
+  TYPE = EXTERNAL_STAGE
+
+  STORAGE_PROVIDER = 'S3'
+
+  ENABLED = TRUE
+
+  STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::459181229130:role/snowflake_role'
+
+  STORAGE_ALLOWED_LOCATIONS = ('s3://etl-scd2/raw_data/');
+
+-- DESCRIPTION OF INTEGRATION-- 
+
+DESC INTEGRATION AWS;
+
+-- file format --
+
+CREATE OR REPLACE FILE FORMAT MY_CSV_FORMAT
+
+  TYPE = CSV
+
+  FIELD_DELIMITER = ','
+
+  FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+
+  SKIP_HEADER = 1
+
+  NULL_IF = ('NULL', 'null')
+
+  EMPTY_FIELD_AS_NULL = true;
+
+
+-- bucket path & format -- 
+
+CREATE SCD2
+
+  STORAGE_INTEGRATION = AWS
+
+  URL = 's3://etl-scd2/raw_data/'
+
+  FILE_FORMAT = MY_CSV_FORMAT;
+
